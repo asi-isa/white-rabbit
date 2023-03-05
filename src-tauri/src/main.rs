@@ -1,19 +1,19 @@
 use tauri::Manager;
 
-mod node;
-use node::appstate::AppState;
+mod server;
+use server::state::AppState;
 
 #[tokio::main]
 async fn main() {
-    let node = node::Node::new("127.0.0.1:3300".to_string());
+    let srv = server::Server::new("127.0.0.1:3300".to_string());
 
-    node.listen().await;
+    srv.listen().await;
 
     tauri::Builder::default()
         .setup(move |app| {
             let app_handle = app.app_handle().clone();
 
-            node.set(AppState::new(Some(app_handle)));
+            srv.set(AppState::new(Some(app_handle)));
 
             Ok(())
         })

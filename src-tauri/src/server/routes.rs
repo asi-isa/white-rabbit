@@ -1,6 +1,6 @@
 use actix_web::{get, web, Responder};
 
-use crate::node::appstate::AppState;
+use crate::server::state::AppState;
 
 #[get("/hello/{param}")]
 pub async fn hello(param: web::Path<String>) -> impl Responder {

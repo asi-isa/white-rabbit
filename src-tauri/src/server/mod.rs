@@ -3,19 +3,19 @@ use actix_web::{
     App, HttpServer,
 };
 
-pub mod appstate;
 mod routes;
+pub mod state;
 use self::{
-    appstate::AppState,
     routes::{hello, index},
+    state::AppState,
 };
 
-pub struct Node {
+pub struct Server {
     address: String,
     state: Data<AppState>,
 }
 
-impl Node {
+impl Server {
     pub fn new(address: String) -> Self {
         Self {
             address,
