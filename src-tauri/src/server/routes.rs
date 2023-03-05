@@ -3,7 +3,7 @@ use tauri::Manager;
 
 use crate::server::state::AppState;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct Message {
@@ -11,7 +11,7 @@ pub struct Message {
 }
 
 // the payload type must implement `Serialize` and `Clone`.
-#[derive(Clone, serde::Serialize)]
+#[derive(Clone, Serialize)]
 struct Payload {
     message: String,
 }
