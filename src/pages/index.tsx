@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 
 import MessageInput from "../components/MessageInput";
+import RevealTxt from "../components/animated/RevealTxt";
 
 function App() {
-  const [msgs, setMsgs] = useState<string[]>([]);
+  const [msgs, setMsgs] = useState<string[]>(["Wake up", "Nice"]);
 
   useEffect(() => {
     const unlisten = listen("rcv", (e) => {
-      console.log(e);
-      console.log(e.payload);
       const author = Math.random() > 0.5 ? "green" : "blue";
 
       setMsgs((currentMsgs) => {
@@ -29,6 +28,11 @@ function App() {
     <div className="h-screen flex flex-col justify-end gap-4 p-3">
       <div>
         {msgs.map((msg, i) => {
+          // animate last element
+          if (i === msgs.length - 1) {
+            return <RevealTxt key={i} txt={msg} />;
+          }
+
           return <p key={i}>{msg}</p>;
         })}
       </div>
