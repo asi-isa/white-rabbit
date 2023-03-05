@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
 import { TbSend } from "react-icons/tb";
 
 interface MessageInputProps {}
@@ -9,7 +10,7 @@ const MessageInput = ({}: MessageInputProps) => {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    console.log("msg", msg);
+    invoke("send", { text: msg }).then(() => setMsg(""));
   }
 
   return (

@@ -3,6 +3,9 @@ use tauri::Manager;
 mod server;
 use server::state::AppState;
 
+mod client;
+use client::send;
+
 #[tokio::main]
 async fn main() {
     let srv = server::Server::new("127.0.0.1:3300".to_string());
@@ -17,7 +20,7 @@ async fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![send])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
