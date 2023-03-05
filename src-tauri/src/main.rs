@@ -1,17 +1,23 @@
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
+use tauri::Manager;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod node;
+use node::appstate::AppState;
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    let node = node::Node::new("127.0.0.1:3300".to_string());
+
+    node.listen().await;
+
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .setup(move |app| {
+            let app_handle = app.app_handle().clone();
+
+            node.set(AppState::new(Some(app_handle)));
+
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
