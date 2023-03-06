@@ -1,3 +1,5 @@
+use std::env;
+
 use tauri::Manager;
 
 mod server;
@@ -8,7 +10,13 @@ use client::send;
 
 #[tokio::main]
 async fn main() {
-    let srv = server::Server::new("127.0.0.1:3300".to_string());
+    // let args: Vec<String> = env::args().collect();
+    // let port = &args[1];
+    let port = 3300;
+
+    let address = format!("127.0.0.1:{port}");
+
+    let srv = server::Server::new(dbg!(address));
 
     srv.listen().await;
 

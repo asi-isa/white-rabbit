@@ -1,0 +1,12 @@
+extend ui, 
+  dashboard
+
+generate random port number, look if its available, assign it, and show it for dbg
+
+Message {
+  text: string,
+  sender_name: string,
+  ...
+
+  ip, port? get from header
+}

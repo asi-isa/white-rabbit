@@ -1,43 +1,9 @@
-import { useEffect, useState } from "react";
-import { listen } from "@tauri-apps/api/event";
-
-import MessageInput from "../components/MessageInput";
-import RevealTxt from "../components/animated/RevealTxt";
+import Chat from "../components/Chat";
 
 function App() {
-  const [msgs, setMsgs] = useState<string[]>(["Wake up", "Nice"]);
-
-  useEffect(() => {
-    const unlisten = listen("rcv", (e) => {
-      const author = Math.random() > 0.5 ? "green" : "blue";
-
-      setMsgs((currentMsgs) => {
-        const newMsgs = `${author}: ${e.payload}`;
-        console.log("newMsgs", newMsgs);
-
-        return [...currentMsgs, `${author}: ${(e.payload as any).message}`];
-      });
-    });
-
-    return () => {
-      unlisten.then((f) => f());
-    };
-  }, []);
-
   return (
-    <div className="h-screen flex flex-col justify-end gap-4 p-3">
-      <div>
-        {msgs.map((msg, i) => {
-          // animate last element
-          if (i === msgs.length - 1) {
-            return <RevealTxt key={i} txt={msg} />;
-          }
-
-          return <p key={i}>{msg}</p>;
-        })}
-      </div>
-
-      <MessageInput />
+    <div>
+      <Chat />
     </div>
   );
 }
