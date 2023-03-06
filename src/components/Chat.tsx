@@ -26,7 +26,7 @@ const Chat = ({}: ChatProps) => {
     };
   }, []);
   return (
-    <div className="h-screen flex flex-col justify-end gap-4 p-3">
+    <div className="h-screen w-full flex flex-col justify-end gap-4 p-3">
       <div>
         {msgs.map((msg, i) => {
           // animate last element
