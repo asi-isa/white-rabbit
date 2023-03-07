@@ -6,7 +6,7 @@ use actix_web::{
 mod routes;
 pub mod state;
 use self::{
-    routes::{hello, index, rcv_msg},
+    routes::{friend_request, hello, index, rcv_msg},
     state::AppState,
 };
 
@@ -37,6 +37,7 @@ impl Server {
                     .service(hello)
                     .service(index)
                     .service(rcv_msg)
+                    .service(friend_request)
             })
             .bind(&self.address)
             .unwrap()

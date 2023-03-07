@@ -1,5 +1,5 @@
 use actix_web::{get, post, web, HttpRequest, Responder};
-use tauri::Manager;
+use tauri::{App, Manager};
 
 use crate::server::state::AppState;
 
@@ -8,6 +8,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
 pub struct Message {
     text: String,
+}
+
+#[derive(Deserialize)]
+pub struct FriendRequest {
+    ip: String,
+    port: String,
 }
 
 // the payload type must implement `Serialize` and `Clone`.
@@ -24,6 +30,24 @@ pub async fn hello(param: web::Path<String>) -> impl Responder {
 #[get("/")]
 pub async fn index(data: web::Data<AppState>) -> impl Responder {
     format!("hello {:#?}", data.app_handle())
+}
+
+#[post("/friend/request")]
+pub async fn friend_request(
+    friend_request: web::Json<FriendRequest>,
+    data: web::Data<AppState>,
+) -> impl Responder {
+    // TODO emit to frontend
+
+    println!(
+        "received friend request {:#?} {:#?}",
+        friend_request.ip, friend_request.port
+    );
+
+    format!(
+        "received friend request {:#?} {:#?}",
+        friend_request.ip, friend_request.port
+    )
 }
 
 #[post("/msg")]
