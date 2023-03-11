@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use actix_web::{
     web::{self, Data},
     App, HttpServer,
@@ -5,20 +7,22 @@ use actix_web::{
 
 mod routes;
 pub mod state;
+mod util;
 use self::{
     routes::{friend_request, hello, index, rcv_msg},
     state::AppState,
+    util::get_address,
 };
 
 pub struct Server {
-    address: String,
+    address: SocketAddr,
     state: Data<AppState>,
 }
 
 impl Server {
-    pub fn new(address: String) -> Self {
+    pub fn new() -> Self {
         Self {
-            address,
+            address: dbg!(get_address()),
             state: web::Data::new(AppState::new(None)),
         }
     }
@@ -43,5 +47,12 @@ impl Server {
             .unwrap()
             .run(),
         );
+    }
+
+    pub fn ip_port(&self) -> (String, String) {
+        (
+            self.address.ip().to_string(),
+            self.address.port().to_string(),
+        )
     }
 }

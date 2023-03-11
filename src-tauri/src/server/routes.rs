@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, HttpRequest, Responder};
-use tauri::{App, Manager};
+use tauri::Manager;
 
-use crate::server::state::AppState;
+use crate::{server::state::AppState, types::PayloadAddress};
 
 use serde::{Deserialize, Serialize};
 
@@ -37,17 +37,14 @@ pub async fn friend_request(
     friend_request: web::Json<FriendRequest>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    // TODO emit to frontend
+    let FriendRequest { ip, port } = friend_request.0;
 
-    println!(
-        "received friend request {:#?} {:#?}",
-        friend_request.ip, friend_request.port
-    );
+    let payload = PayloadAddress::new(ip.clone(), port.clone());
 
-    format!(
-        "received friend request {:#?} {:#?}",
-        friend_request.ip, friend_request.port
-    )
+    emit("friendRequest", payload, data);
+
+    // TODO ACK
+    format!("received friend request from {:#?} {:#?}", ip, port)
 }
 
 #[post("/msg")]

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { invoke } from "@tauri-apps/api/tauri";
 
 import Input from "./Input";
+import { useCtx } from "../ctx";
 
 interface AddFriendProps {
   show: boolean;
@@ -10,6 +11,8 @@ interface AddFriendProps {
 }
 
 const AddFriend = ({ show, onClose }: AddFriendProps) => {
+  const { ctx } = useCtx();
+
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -21,12 +24,18 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
 
     const [ip, port] = values;
 
-    // TODO if valid
+    // TODO validate ip, port import before continuing
 
-    console.log({ values });
-    invoke("friend_request", { ip, port }).then(() =>
-      console.log("request send")
-    );
+    const from = { ip: ctx.ip, port: ctx.port };
+    const to = { ip, port };
+
+    // TODO close AddFriend, show success or error
+    // TODO rename send_friend_request
+    invoke("friend_request", { from, to })
+      .then(() => console.log("request sent"))
+      .catch((e) =>
+        console.error("something went wrong, while invoking friend_request", e)
+      );
   }
 
   return (

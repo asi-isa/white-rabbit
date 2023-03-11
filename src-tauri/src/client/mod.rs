@@ -1,4 +1,6 @@
-use std::{collections::HashMap, fmt::format};
+use std::collections::HashMap;
+
+use crate::types::Address;
 
 #[tauri::command]
 pub async fn send(text: String) {
@@ -14,18 +16,16 @@ pub async fn send(text: String) {
 }
 
 #[tauri::command]
-pub async fn friend_request(ip: String, port: String) {
-    let mut map = HashMap::new();
-    // TODO get my ip and port from global state
-    // less ambiguos: toIp, fromIp, ...
-    map.insert("ip", "127.0.0.1");
-    map.insert("port", "3300");
+pub async fn friend_request(from: Address, to: Address) {
+    let mut json_body = HashMap::new();
+    json_body.insert("ip", from.ip());
+    json_body.insert("port", from.port());
 
-    let url = format!("http://{ip}:{port}/friend/request");
+    let url = format!("http://{}/friend/request", dbg!(to.to_string()));
 
     reqwest::Client::new()
         .post(url)
-        .json(&map)
+        .json(&json_body)
         .send()
         .await
         .unwrap();
