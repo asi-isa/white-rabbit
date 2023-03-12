@@ -9,7 +9,7 @@ const Input = ({ title, autofocus = false }: InputProps) => {
       <p className="">{title}:</p>
 
       <input
-        className="bg-[var(--bg-muted)] text-center rounded-md "
+        className="bg-[var(--bg-muted)] text-center rounded-md"
         name={title}
         required
         autoFocus={autofocus}

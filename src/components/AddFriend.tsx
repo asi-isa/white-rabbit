@@ -1,9 +1,11 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { invoke } from "@tauri-apps/api/tauri";
+import { isIP, isIPv6 } from "is-ip";
 
 import Input from "./Input";
 import { useCtx } from "../ctx";
+import { isPort } from "../util";
 
 interface AddFriendProps {
   show: boolean;
@@ -12,6 +14,9 @@ interface AddFriendProps {
 
 const AddFriend = ({ show, onClose }: AddFriendProps) => {
   const { ctx } = useCtx();
+
+  const [error, setError] = useState({ ip: false, port: false });
+  console.log({ error });
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,9 +27,19 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
       return field.value;
     });
 
-    const [ip, port] = values;
+    let [ip, port] = values;
 
-    // TODO validate ip, port import before continuing
+    const isValidIP = isIP(ip);
+    const isValidPort = isPort(port);
+
+    setError({ ip: !isValidIP, port: !isValidPort });
+
+    if (!isValidIP || !isValidPort) {
+      return;
+    }
+
+    // add [] to IPv6 addresses
+    ip = isIPv6(ip) ? `[${ip}]` : ip;
 
     const from = { ip: ctx.ip, port: ctx.port };
     const to = { ip, port };
@@ -50,7 +65,10 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
         >
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur"
-            onClick={onClose}
+            onClick={() => {
+              setError({ ip: false, port: false });
+              onClose();
+            }}
           />
 
           <motion.form
@@ -61,12 +79,12 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
             transition={{ duration: 0.4 }}
             className="absolute flex flex-col gap-3 border border-white/10 rounded-md p-4 bg-[var(--bg)] drop-shadow-[0_1px_4px_rgba(255,255,255,0.16)]"
           >
-            {/* // TODO custom validation 
-                type
-                validation={(input: type) => boolean}              
-            */}
             <Input title="IP" autofocus />
+            {error.ip && <p>please provide a valid ip.</p>}
+
             <Input title="Port" />
+            {error.port && <p>please provide a valid port.</p>}
+
             <input
               type="submit"
               value="Request"
