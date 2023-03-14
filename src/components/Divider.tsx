@@ -1,8 +1,14 @@
-interface DividerProps {}
+interface DividerProps {
+  direction?: "horizontal" | "vertical";
+}
 
-const Divider = ({}: DividerProps) => {
+const Divider = ({ direction = "vertical" }: DividerProps) => {
   return (
-    <div className="h-screen w-[1px] shrink-0 bg-[var(--color)] opacity-10 " />
+    <div
+      className={`${
+        direction === "vertical" ? "h-screen w-[1px]" : "w-full h-[1px]"
+      } shrink-0 bg-[var(--color)] opacity-10`}
+    />
   );
 };
 

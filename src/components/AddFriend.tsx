@@ -7,6 +7,7 @@ import Modal from "./Modal";
 import Input from "./Input";
 import { useCtx } from "../ctx";
 import { isPort } from "../util";
+import Result, { ResultType } from "./Result";
 
 interface AddFriendProps {
   show: boolean;
@@ -16,12 +17,18 @@ interface AddFriendProps {
 const AddFriend = ({ show, onClose }: AddFriendProps) => {
   const { ctx } = useCtx();
 
+  // TODO formState => convinience(prefill form when tryAgain or when closed accidentaly), validate while typing
   const [error, setError] = useState({ ip: false, port: false });
-  const [requestStatus, setRequestStatus] = useState({ error: false, msg: "" });
+  const initialResponseResult: ResultType = { error: false, msg: "" };
+  const [responseResult, setResponseResult] = useState<ResultType>(
+    initialResponseResult
+  );
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    // TODO abstract to util.form function
+    // getFormElements(e) => []
     const elements = Array.from(e.currentTarget.elements) as HTMLInputElement[];
     // exlude submit button. i.e. last element
     const values = elements.slice(0, -1).map((field) => {
@@ -45,28 +52,27 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
     const from = { ip: ctx.ip, port: ctx.port };
     const to = { ip, port };
 
-    // TODO close AddFriend, show success or error
     // TODO rename send_friend_request
     invoke("friend_request", { from, to })
       .then(() => {
-        setRequestStatus({ error: false, msg: "Successfully sent request" });
+        setResponseResult({ error: false, msg: "Successfully sent request." });
       })
       .catch((e) => {
-        setRequestStatus({ error: true, msg: "Something went wrong" });
+        setResponseResult({ error: true, msg: "Something went wrong." });
       });
+  }
+
+  function _onClose() {
+    setError({ ip: false, port: false });
+    setResponseResult(initialResponseResult);
+    onClose();
   }
 
   return (
     <>
-      <Modal
-        show={show}
-        onBlur={() => {
-          setError({ ip: false, port: false });
-          setRequestStatus({ error: false, msg: "" });
-          onClose();
-        }}
-      >
-        {!requestStatus.msg && (
+      <Modal show={show} onBlur={_onClose}>
+        {!responseResult.msg && (
+          // TODO add title
           <motion.form
             onSubmit={onSubmit}
             initial={{ opacity: 0, y: 10 }}
@@ -81,6 +87,7 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
             <Input title="Port" />
             {error.port && <p>please provide a valid port.</p>}
 
+            {/* TODO loading indicator */}
             <input
               type="submit"
               value="Request"
@@ -89,20 +96,12 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
           </motion.form>
         )}
 
-        {requestStatus.msg && (
-          // TODO extract to Card Component
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.4 }}
-            className="absolute flex flex-col gap-3 border border-white/10 rounded-md p-4 bg-[var(--bg)] drop-shadow-[0_1px_4px_rgba(255,255,255,0.16)]"
-          >
-            {/* TODO if error try again or close btn */}
-            {/* TODO else close btn */}
-            {/* TODO lottiefiles */}
-            <p>{requestStatus.msg}</p>
-          </motion.div>
+        {responseResult.msg && (
+          <Result
+            result={responseResult}
+            onClose={_onClose}
+            onTryAgain={() => setResponseResult(initialResponseResult)}
+          />
         )}
       </Modal>
     </>
