@@ -41,9 +41,8 @@ pub async fn friend_request(
 
     let payload = PayloadAddress::new(ip.clone(), port.clone());
 
-    emit("friendRequest", payload, data);
+    emit("incomingFriendRequest", payload, data);
 
-    // TODO ACK
     format!("received friend request from {:#?} {:#?}", ip, port)
 }
 
