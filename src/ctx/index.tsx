@@ -9,30 +9,37 @@ import {
 
 export type FriendType = { ip: string; port: string };
 
-type GlobalCtxData = {
+type CtxData = {
   ip: string;
   port: string;
   friends: FriendType[];
+  currentChatFriend: FriendType | null;
 };
 
-const InitialCtxData = { ip: "", port: "", friends: [] as FriendType[] };
+const InitialCtxData: CtxData = {
+  ip: "",
+  port: "",
+  friends: [] as FriendType[],
+  currentChatFriend: null,
+};
 
-type GlobalCtxType = {
-  ctx: GlobalCtxData;
-  setCtx: Dispatch<SetStateAction<GlobalCtxData>>;
+type CtxType = {
+  ctx: CtxData;
+  setCtx: Dispatch<SetStateAction<CtxData>>;
+  updateCtx: (partialCtx: Partial<CtxData>) => void;
   addFriend: (friend: FriendType) => void;
 };
 
-const GlobalCtx = createContext<GlobalCtxType>(null);
+const Ctx = createContext<CtxType>(null);
 
-export const useCtx = () => useContext(GlobalCtx);
+export const useCtx = () => useContext(Ctx);
 
 interface Props {
   children: ReactNode;
 }
 
-export default function GlobalCtxProvider({ children }: Props) {
-  const [ctx, setCtx] = useState<GlobalCtxData>(InitialCtxData);
+export default function CtxProvider({ children }: Props) {
+  const [ctx, setCtx] = useState<CtxData>(InitialCtxData);
 
   console.log(ctx);
 
@@ -53,9 +60,16 @@ export default function GlobalCtxProvider({ children }: Props) {
     });
   }
 
+  function updateCtx(partialCtx: Partial<CtxData>) {
+    setCtx((currentCtx) => ({
+      ...currentCtx,
+      ...partialCtx,
+    }));
+  }
+
   return (
-    <GlobalCtx.Provider value={{ ctx, setCtx, addFriend }}>
+    <Ctx.Provider value={{ ctx, setCtx, updateCtx, addFriend }}>
       {children}
-    </GlobalCtx.Provider>
+    </Ctx.Provider>
   );
 }

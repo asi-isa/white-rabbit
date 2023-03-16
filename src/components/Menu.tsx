@@ -5,6 +5,7 @@ import { useIncomingFriendRequest } from "../hooks";
 
 import AddFriend from "./AddFriend";
 import RevealTxt from "./animated/RevealTxt";
+import Friend from "./Friend";
 import FriendRequest from "./FriendRequest";
 
 interface MenuProps {}
@@ -31,21 +32,19 @@ const Menu = ({}: MenuProps) => {
           <RevealTxt txt="white rabbit" />
         </div>
 
-        <div>
+        <div className="flex flex-col gap-3">
           <p>
-            {ctx?.ip}:{ctx?.port}
+            {ctx.ip}:{ctx.port}
           </p>
-          {/* Friends */}
-          {ctx.friends.map((friend, i) => {
-            return (
-              <p key={friend.port + i}>
-                {friend.ip}:{friend.port}
-              </p>
-            );
-          })}
+
+          <div className="flex flex-col gap-2">
+            {ctx.friends.map((friend, i) => {
+              return <Friend key={friend.port + i} friend={friend} />;
+            })}
+          </div>
 
           <div
-            className="mt-3 cursor-pointer"
+            className="cursor-pointer"
             onClick={() => setShowAddFriend(true)}
           >
             <p>+ add friend</p>
