@@ -27,7 +27,6 @@ interface Props {
 
 export default function GlobalCtxProvider({ children }: Props) {
   const [ctx, setCtx] = useState<GlobalCtxData>(null);
-  console.log({ ctx });
 
   return (
     <GlobalCtx.Provider value={{ ctx, setCtx }}>{children}</GlobalCtx.Provider>

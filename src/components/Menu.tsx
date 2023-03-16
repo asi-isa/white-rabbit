@@ -1,14 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { useCtx } from "../ctx";
+import { useIncomingFriendRequest } from "../hooks";
 
 import AddFriend from "./AddFriend";
 import RevealTxt from "./animated/RevealTxt";
+import FriendRequest from "./FriendRequest";
 
 interface MenuProps {}
 
 const Menu = ({}: MenuProps) => {
   const { ctx } = useCtx();
+
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [incomingFriendRequest, setIncomingFriendRequest] = useState(null);
+
+  const { ip, port } = useIncomingFriendRequest();
+
+  console.log({ incomingFriendRequest });
+
+  useEffect(() => {
+    if (ip !== null && port !== null) {
+      setIncomingFriendRequest({ ip, port });
+
+      // TODO accept => add ip, port to friend list
+    }
+  }, [ip, port]);
 
   return (
     <>
@@ -17,11 +34,11 @@ const Menu = ({}: MenuProps) => {
           <RevealTxt txt="white rabbit" />
         </div>
 
-        {/* Friends */}
         <div>
           <p>
             {ctx?.ip}:{ctx?.port}
           </p>
+          {/* Friends */}
           <p>Venice Base</p>
           <p>Base Venice</p>
 
@@ -39,6 +56,12 @@ const Menu = ({}: MenuProps) => {
       </div>
 
       <AddFriend show={showAddFriend} onClose={() => setShowAddFriend(false)} />
+
+      <FriendRequest
+        show={incomingFriendRequest !== null}
+        onClose={() => setIncomingFriendRequest(null)}
+        address={incomingFriendRequest}
+      />
     </>
   );
 };

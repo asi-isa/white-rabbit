@@ -10,26 +10,15 @@ export function useIncomingFriendRequest() {
   });
 
   useEffect(() => {
-    const unlistenFriendRequestReponse = listen(
+    const unlistenFriendRequest = listen(
       "incomingFriendRequest",
       (event: { payload: { ip: string; port: string } }) => {
-        // TODO show friend request, accept, block deny
-        // accept => add ip, port to friend list
-
         setIpPort(event.payload);
-
-        let { ip, port } = event.payload;
-
-        console.log(
-          "received friend request, forewarded to frontend",
-          ip,
-          port
-        );
       }
     );
 
     return () => {
-      unlistenFriendRequestReponse.then((unlisten) => unlisten());
+      unlistenFriendRequest.then((unlisten) => unlisten());
     };
   }, []);
 

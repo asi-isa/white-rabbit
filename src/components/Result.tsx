@@ -1,7 +1,5 @@
-import { IoIosClose } from "react-icons/io";
-
 import Card from "./animated/Card";
-import Divider from "./Divider";
+import Btn from "./Btn";
 
 export type ResultType = {
   error: boolean;
@@ -16,32 +14,12 @@ interface Props {
 
 const Result = ({ result, onTryAgain, onClose }: Props) => {
   return (
-    <Card>
+    <Card title={result.error ? "Error" : "OK"} onClose={onClose}>
       {/* TODO lottiefiles */}
       <div className="flex flex-col gap-6">
-        {/* TODO card title */}
-        <div>
-          <div className="flex justify-between">
-            <p className="text-lg">{result.error ? "Error" : "OK"}</p>
-            <IoIosClose
-              onClick={onClose}
-              className="text-2xl cursor-pointer transition-colors text-white/60 hover:text-white"
-            />
-          </div>
-
-          <Divider direction="horizontal" />
-        </div>
-
         <p>{result.msg}</p>
 
-        {result.error && (
-          <p
-            className="border border-white/10 py-1 px-2 rounded-md self-end cursor-pointer"
-            onClick={onTryAgain}
-          >
-            Try Again
-          </p>
-        )}
+        {result.error && <Btn title="Try Again" onClick={onTryAgain} />}
       </div>
     </Card>
   );
