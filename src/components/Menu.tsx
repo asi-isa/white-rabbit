@@ -15,15 +15,12 @@ const Menu = ({}: MenuProps) => {
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [incomingFriendRequest, setIncomingFriendRequest] = useState(null);
 
+  // TODO ip, port, name
   const { ip, port } = useIncomingFriendRequest();
-
-  console.log({ incomingFriendRequest });
 
   useEffect(() => {
     if (ip !== null && port !== null) {
       setIncomingFriendRequest({ ip, port });
-
-      // TODO accept => add ip, port to friend list
     }
   }, [ip, port]);
 
@@ -39,8 +36,13 @@ const Menu = ({}: MenuProps) => {
             {ctx?.ip}:{ctx?.port}
           </p>
           {/* Friends */}
-          <p>Venice Base</p>
-          <p>Base Venice</p>
+          {ctx.friends.map((friend, i) => {
+            return (
+              <p key={friend.port + i}>
+                {friend.ip}:{friend.port}
+              </p>
+            );
+          })}
 
           <div
             className="mt-3 cursor-pointer"

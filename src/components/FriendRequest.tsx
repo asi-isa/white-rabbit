@@ -1,6 +1,7 @@
 import Modal from "./Modal";
 import Card from "./animated/Card";
 import Btn from "./Btn";
+import { useCtx } from "../ctx";
 
 interface FriendRequestProps {
   show: boolean;
@@ -8,14 +9,18 @@ interface FriendRequestProps {
   address: { ip: string; port: string };
 }
 
+// TODO rename prop address
 const FriendRequest = ({ show, onClose, address }: FriendRequestProps) => {
+  const { addFriend } = useCtx();
+
   function onAccept() {
-    console.log(
-      "friend request accepted => put on friend list, send ack, close modal"
-    );
+    addFriend(address);
+
+    // TODO send ack
+
+    onClose();
   }
 
-  function onDeny() {}
   return (
     <Modal show={show} onBlur={onClose}>
       <Card title="Incoming Friend Request" onClose={onClose}>
@@ -25,7 +30,7 @@ const FriendRequest = ({ show, onClose, address }: FriendRequestProps) => {
           </p>
 
           <div className="flex gap-3 self-end">
-            <Btn title="Deny" onClick={onDeny} />
+            <Btn title="Deny" onClick={onClose} />
             <Btn title="Accept" onClick={onAccept} />
           </div>
         </div>
