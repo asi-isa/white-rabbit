@@ -8,7 +8,7 @@ mod server;
 use server::{state::AppState, Server};
 
 mod client;
-use client::{friend_request, send};
+use client::{accept_friend_request, send, send_friend_request};
 
 #[tokio::main]
 async fn main() {
@@ -50,7 +50,11 @@ async fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![send, friend_request])
+        .invoke_handler(tauri::generate_handler![
+            send,
+            send_friend_request,
+            accept_friend_request
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

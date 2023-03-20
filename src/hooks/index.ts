@@ -25,6 +25,35 @@ export function useIncomingFriendRequest() {
   return ipPort;
 }
 
+// TODO abstract
+export function useOnFriendRequestAccepted() {
+  const { ctx, updateCtx } = useCtx();
+
+  useEffect(() => {
+    const unlistenFriendRequestAccepted = listen(
+      "friendRequestAck",
+      (event: { payload: { ip: string; port: string } }) => {
+        const friend = event.payload;
+
+        // remove friend from pendingFriends
+        const pendingFriends = ctx.pendingFriends.filter(
+          (pendingFriend) => pendingFriend !== friend
+        );
+
+        // add to friends
+        const friends = ctx.friends.slice();
+        friends.push(friend);
+
+        updateCtx({ pendingFriends, friends });
+      }
+    );
+
+    return () => {
+      unlistenFriendRequestAccepted.then((unlisten) => unlisten());
+    };
+  }, []);
+}
+
 export function useRequestOwnIpPort() {
   const { ctx, setCtx } = useCtx();
   // receive ip, port for

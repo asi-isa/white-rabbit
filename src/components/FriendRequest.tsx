@@ -2,6 +2,8 @@ import Modal from "./Modal";
 import Card from "./animated/Card";
 import Btn from "./Btn";
 import { useCtx } from "../ctx";
+import { invoke } from "@tauri-apps/api/tauri";
+import { isIPv6 } from "is-ip";
 
 interface FriendRequestProps {
   show: boolean;
@@ -11,12 +13,27 @@ interface FriendRequestProps {
 
 // TODO rename prop address
 const FriendRequest = ({ show, onClose, address }: FriendRequestProps) => {
-  const { addFriend } = useCtx();
+  const { ctx, addFriend } = useCtx();
 
   function onAccept() {
     addFriend(address);
 
-    // TODO send ack
+    let { ip, port } = address;
+    // add [] to IPv6 addresses
+    ip = isIPv6(ip) ? `[${ip}]` : ip;
+
+    invoke("accept_friend_request", {
+      from: { ip: ctx.ip, port: ctx.port },
+      to: { ip, port },
+    })
+      .then(() => {
+        console.log("be sent friend req ack");
+      })
+      .catch((e) => {
+        console.log(e);
+
+        console.log("something went wrong while sending friend request ack");
+      });
 
     onClose();
   }

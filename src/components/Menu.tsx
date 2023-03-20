@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { useCtx } from "../ctx";
-import { useIncomingFriendRequest } from "../hooks";
+import { useOnFriendRequestAccepted, useIncomingFriendRequest } from "../hooks";
 
 import AddFriend from "./AddFriend";
 import RevealTxt from "./animated/RevealTxt";
 import Friend from "./Friend";
 import FriendRequest from "./FriendRequest";
+import PendingFriend from "./PendingFriend";
 
 interface MenuProps {}
 
@@ -17,13 +18,15 @@ const Menu = ({}: MenuProps) => {
   const [incomingFriendRequest, setIncomingFriendRequest] = useState(null);
 
   // TODO ip, port, name
-  const { ip, port } = useIncomingFriendRequest();
+  const friendRequest = useIncomingFriendRequest();
 
   useEffect(() => {
-    if (ip !== null && port !== null) {
-      setIncomingFriendRequest({ ip, port });
+    if (friendRequest.ip !== null && friendRequest.port !== null) {
+      setIncomingFriendRequest(friendRequest);
     }
-  }, [ip, port]);
+  }, [friendRequest]);
+
+  useOnFriendRequestAccepted();
 
   return (
     <>
@@ -40,6 +43,12 @@ const Menu = ({}: MenuProps) => {
           <div className="flex flex-col gap-2">
             {ctx.friends.map((friend, i) => {
               return <Friend key={friend.port + i} friend={friend} />;
+            })}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {ctx.pendingFriends.map((friend, i) => {
+              return <PendingFriend key={friend.port + i} friend={friend} />;
             })}
           </div>
 

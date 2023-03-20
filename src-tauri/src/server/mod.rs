@@ -9,7 +9,7 @@ mod routes;
 pub mod state;
 mod util;
 use self::{
-    routes::{friend_request, hello, index, rcv_msg},
+    routes::{friend_request, friend_request_ack, hello, index, rcv_msg},
     state::AppState,
     util::get_address,
 };
@@ -42,6 +42,7 @@ impl Server {
                     .service(index)
                     .service(rcv_msg)
                     .service(friend_request)
+                    .service(friend_request_ack)
             })
             .bind(&self.address)
             .unwrap()

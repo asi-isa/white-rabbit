@@ -13,6 +13,7 @@ type CtxData = {
   ip: string;
   port: string;
   friends: FriendType[];
+  pendingFriends: FriendType[];
   currentChatFriend: FriendType | null;
 };
 
@@ -20,6 +21,7 @@ const InitialCtxData: CtxData = {
   ip: "",
   port: "",
   friends: [] as FriendType[],
+  pendingFriends: [] as FriendType[],
   currentChatFriend: null,
 };
 

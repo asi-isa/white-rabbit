@@ -34,16 +34,30 @@ pub async fn index(data: web::Data<AppState>) -> impl Responder {
 
 #[post("/friend/request")]
 pub async fn friend_request(
-    friend_request: web::Json<FriendRequest>,
+    friend_request_data: web::Json<FriendRequest>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let FriendRequest { ip, port } = friend_request.0;
+    let FriendRequest { ip, port } = friend_request_data.0;
 
     let payload = PayloadAddress::new(ip.clone(), port.clone());
 
     emit("incomingFriendRequest", payload, data);
 
     format!("received friend request from {:#?} {:#?}", ip, port)
+}
+
+#[post("/friend/request/ack")]
+pub async fn friend_request_ack(
+    friend_request_data: web::Json<FriendRequest>,
+    state: web::Data<AppState>,
+) -> impl Responder {
+    let FriendRequest { ip, port } = friend_request_data.0;
+
+    let payload = PayloadAddress::new(ip.clone(), port.clone());
+
+    emit("friendRequestAck", payload, state);
+
+    format!("accepted friend request from {:#?} {:#?}", ip, port)
 }
 
 #[post("/msg")]

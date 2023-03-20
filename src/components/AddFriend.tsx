@@ -15,7 +15,7 @@ interface AddFriendProps {
 }
 
 const AddFriend = ({ show, onClose }: AddFriendProps) => {
-  const { ctx } = useCtx();
+  const { ctx, updateCtx } = useCtx();
 
   // TODO formState => convinience(prefill form when tryAgain or when closed accidentaly), validate while typing
   const [error, setError] = useState({ ip: false, port: false });
@@ -27,7 +27,7 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // TODO abstract to util.form function
+    // TODO abstract to util::form.getValues(e) function
     // getFormElements(e) => []
     const elements = Array.from(e.currentTarget.elements) as HTMLInputElement[];
     // exlude submit button. i.e. last element
@@ -53,8 +53,13 @@ const AddFriend = ({ show, onClose }: AddFriendProps) => {
     const to = { ip, port };
 
     // TODO rename send_friend_request
-    invoke("friend_request", { from, to })
+    invoke("send_friend_request", { from, to })
       .then(() => {
+        // add pending friend = friend request sent but not yet accepted
+        const pendingFriends = ctx.pendingFriends.slice(); // copy
+        pendingFriends.push(to);
+        updateCtx({ pendingFriends });
+
         setResponseResult({ error: false, msg: "Successfully sent request." });
       })
       .catch((e) => {
