@@ -1,16 +1,36 @@
-less ambiguoity,
-  prefix, postfix emitnames, rust functions, 
-  more semantic emitnames
+stronger typing
+  uniform ip usage, helpful when
+    invoking rust fn
+    storing as keys
+    ...
 
-extend ui, 
-  dashboard
+  make api between backend and frontend more robust
+    use Types when invoking rust fn or when listening for events
+    use types when emiting events with payload
+    
+  make api between backend and backend more robust
+    use types when sending and receiving requests
 
-generate random port number, look if its available, assign it, and show it for dbg
+  ? put urls in one place (be)
+    example
+      URL.friend_request(to: Address) => 'http://{to}/friend/request'
+  
+Chat
+  only animate incoming friend msgs
+    would be ideal to store them in a queue and print them fifo
 
-Message {
-  text: string,
-  sender_name: string,
-  ...
+  if msg was received while currentChatFriend wasnt selected
+  indicate in ui
 
-  ip, port? get from header
-}
+  clearly show, which friend is currently selected
+
+  show own msgs on the right side and friend msgs on the left
+
+  only allow sending msgs if friend was selected
+
+  display FriendType.name instead of FriendType.address before msg
+
+
+data
+  save data persistently in db
+

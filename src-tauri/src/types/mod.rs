@@ -23,7 +23,7 @@ impl PayloadAddress {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Address {
     ip: String,
     port: String,

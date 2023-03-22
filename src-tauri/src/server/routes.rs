@@ -1,13 +1,15 @@
-use actix_web::{get, post, web, HttpRequest, Responder};
+use actix_web::{get, post, web, Responder};
 use tauri::Manager;
 
 use crate::{server::state::AppState, types::PayloadAddress};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Serialize)]
 pub struct Message {
-    text: String,
+    msg: String,
+    ip: String,
+    port: String,
 }
 
 #[derive(Deserialize)]
@@ -61,30 +63,20 @@ pub async fn friend_request_ack(
 }
 
 #[post("/msg")]
-pub async fn rcv_msg(
-    req: HttpRequest,
-    msg: web::Json<Message>,
-    data: web::Data<AppState>,
-) -> impl Responder {
-    let payload = Payload {
-        message: msg.text.clone(),
-    };
+pub async fn rcv_msg(msg: web::Json<Message>, state: web::Data<AppState>) -> impl Responder {
+    emit("rcv", msg.0, state);
 
-    emit("rcv", payload, data);
-
-    println!("req {:#?}", req);
-    println!("req.peer_addr {:#?}", req.peer_addr());
-    println!("req.connection_info {:#?}", req.connection_info());
-    // println!("req.conn_data {:#?}", req.conn_data());
-    println!("req.headers {:#?}", req.headers());
-
-    format!("hello {:#?}", msg.text)
+    format!("received msg")
 }
 
 /// Emits event with payload to frontend.
-fn emit<S>(event: &str, payload: S, data: web::Data<AppState>)
+fn emit<S>(event: &str, payload: S, state: web::Data<AppState>)
 where
     S: Serialize + Clone,
 {
-    data.app_handle().unwrap().emit_all(event, payload).unwrap();
+    state
+        .app_handle()
+        .unwrap()
+        .emit_all(event, payload)
+        .unwrap();
 }

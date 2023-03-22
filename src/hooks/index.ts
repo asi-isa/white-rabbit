@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 
 import { useCtx } from "../ctx";
+import { isIPv6 } from "is-ip";
 
 export function useIncomingFriendRequest() {
   const [ipPort, setIpPort] = useState<{ ip: string; port: string }>({
@@ -88,4 +89,32 @@ export function useRequestOwnIpPort() {
       unlistenIpPortRequest.then((unlisten) => unlisten());
     };
   }, []);
+}
+
+export function useListenForMsgs() {
+  const { ctx, addMsg } = useCtx();
+
+  const msgs = ctx.chat.get(ctx.currentChatFriend);
+
+  // TODO abstract
+  // TODO useListen(event, handler)
+  useEffect(() => {
+    const unlisten = listen(
+      "rcv",
+      (event: { payload: { msg: string; ip: string; port: string } }) => {
+        let { ip, port, msg } = event.payload;
+        ip = isIPv6(ip) ? `[${ip}]` : ip;
+
+        console.log("recieved from", msg);
+
+        addMsg(`${ip}:${port}:: ${msg}`, { ip, port });
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
+  }, []);
+
+  return msgs;
 }
